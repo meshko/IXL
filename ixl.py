@@ -6,6 +6,10 @@ import urllib
 import sys
 import smtplib
 
+EMAIL_FROM = "meshko@scorch2000.com"
+EMAIL_REPLY_TO = "meshko@gmail.com"
+EMAILS_TO = ["meshko@gmail.com", "boriskruk@gmail.com"]
+
 def send_email(addr_from, addr_from_reply, addrs_to, subject, msg):
 	server = smtplib.SMTP('localhost')
 	server.sendmail(addr_from, addrs_to, 
@@ -74,10 +78,7 @@ def produce_report(name, userid, familyid, grade):
 		report += "\n"
 
 	#print report
-	send_email("meshko@scorch2000.com", "meshko@gmail.com", ["meshko@gmail.com", "boriskruk@gmail.com"], "%s's IXL report" % name, report)
-
-	# Nina: 20736638
-	# Masha: 18593368
+	send_email(EMAIL_FROM, EMAIL_REPLY_TO, EMAILS_TO, "%s's IXL report" % name, report)
 
 produce_report(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
 
