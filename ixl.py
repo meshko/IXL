@@ -34,8 +34,7 @@ def produce_report(name, userid, familyid, grade):
 	http = httplib2.Http()
 	#page = conn.request(u"http://www.ixl.com/","GET")
 
-	#url = 'https://www.ixl.com/signin'   
-	#body = {'username': 'boriskruk', 'password': 'mashakruk'}
+	#url = 'https://www.ixl.com/signin'   	
 	headers = {'Content-type': 'application/x-www-form-urlencoded'}
 	#response, content = http.request(url, 'POST', headers=headers, body=urllib.urlencode(body))
 
