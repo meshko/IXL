@@ -19,13 +19,17 @@ def send_email(addr_from, addr_from_reply, addrs_to, subject, msg):
 class IXLTopic:
 	"""topic"""
 	def __init__(self, element):		
-		self.name = element.find("a", attrs={"class":"skillLink"}).text
+		self.done = False		
+		self.name = element.find("a", attrs={"class":"skillLink"}).findAll("span")[1].text
 		self.url = element.find("a", attrs={"class":"skillLink"})['href']
 		scoreElt = element.find("span", attrs={"class":"stdsScoreMedal"})
 		if scoreElt: 
 			self.score = int(scoreElt.text.strip('()'))
+			imgElt = scoreElt.find("img")
+			if imgElt and imgElt['alt'] == "Gold medal":
+				self.done = True
 		else:
-			self.score = 0
+			self.score = 0		
 
 	def __str__(self):
 		return " ".join([self.name, str(self.score), "www.ixl.com" + self.url])
@@ -56,27 +60,29 @@ def produce_report(name, userid, familyid, grade):
 	allTopics = soup.findAll('li', attrs={"class":"hasIcon"})
 	allTopics = map(lambda el: IXLTopic(el), allTopics)
 
-	notStartedTopics = filter(lambda t: t.score == 0, allTopics)
+	notStartedTopics = filter(lambda t: t.score == 0 and not t.done, allTopics)
 	totalTopics = len(allTopics)
-	startedTopics = filter(lambda t: t.score in range(1,100), allTopics)
-	completedTopics = filter(lambda t: t.score == 100, allTopics)
+	startedTopics = filter(lambda t: t.score in range(1,100) and not t.done, allTopics)
+	completedTopics = filter(lambda t: t.done, allTopics)
 	completedTopicsNum = len(completedTopics)
 
-	report = "%s's IXL Report\n\nTotal: %d\nCompleted: %d (%.2f%%)\nNot started: %d\nStarted but incomplete: %d" %\
+	report = "%s's IXL Report\n\nTotal: %d\nCompleted: %d (%.1f%%)\nNot started: %d\nStarted but incomplete: %d" %\
 	(name, totalTopics, completedTopicsNum, (completedTopicsNum/(totalTopics/100.0)), len(notStartedTopics), len(startedTopics))
 
-	report += "\n\nStarted:\n\n"
-	startedTopics = sorted(startedTopics, key=lambda topic: topic.score, reverse=True)
-	for topic in startedTopics:
-		report += str(topic)
-		report += "\n"
+	if len(startedTopics) > 0:
+		report += "\n\nStarted:\n\n"
+		startedTopics = sorted(startedTopics, key=lambda topic: topic.score, reverse=True)
+		for topic in startedTopics:
+			report += str(topic)
+			report += "\n"
 
-	report += "\n\nNot Started:\n\n"
-	for topic in notStartedTopics:
-		report += str(topic)
-		report += "\n"
+	if len(notStartedTopics) > 0:
+		report += "\n\nNot Started:\n\n"
+		for topic in notStartedTopics:
+			report += str(topic)
+			report += "\n"
 
-	#print report
+	print report
 	send_email(EMAIL_FROM, EMAIL_REPLY_TO, EMAILS_TO, "%s's IXL report" % name, report)
 
 produce_report(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
