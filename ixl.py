@@ -82,7 +82,7 @@ def produce_report(name, userid, familyid, grade):
 			report += str(topic)
 			report += "\n"
 
-	print report
+	#print report
 	send_email(EMAIL_FROM, EMAIL_REPLY_TO, EMAILS_TO, "%s's IXL report" % name, report)
 
 produce_report(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
