@@ -20,13 +20,13 @@ class IXLTopic:
 	"""topic"""
 	def __init__(self, element):		
 		self.done = False		
-		self.name = element.find("a", attrs={"class":"skillLink"}).findAll("span")[1].text
-		self.url = element.find("a", attrs={"class":"skillLink"})['href']
-		scoreElt = element.find("span", attrs={"class":"stdsScoreMedal"})
+		self.name = element.find("a", attrs={"class":"skill-tree-skill-link"}).findAll("span")[1].text
+		self.url = element.find("a", attrs={"class":"skill-tree-skill-link"})['href']
+		scoreElt = element.find("span", attrs={"class":"skill-tree-skill-score"})
 		if scoreElt: 
 			self.score = int(scoreElt.text.strip('()'))
 			imgElt = scoreElt.find("img")
-			if imgElt and imgElt['alt'] == "Gold medal":
+			if imgElt and imgElt['alt'] == "Medal":
 				self.done = True
 		else:
 			self.score = 0		
@@ -57,7 +57,9 @@ def produce_report(name, userid, familyid, grade):
 
 	soup = BeautifulSoup(content)
 	#topics = soup.findAll('li')
-	allTopics = soup.findAll('li', attrs={"class":"hasIcon"})
+	#print content
+	allTopics = soup.findAll('li', attrs={"class":"skill-tree-skill-node skill-tree-skill-has-icon"})
+	#print "found" , len(allTopics), "topics"
 	allTopics = map(lambda el: IXLTopic(el), allTopics)
 
 	notStartedTopics = filter(lambda t: t.score == 0 and not t.done, allTopics)
